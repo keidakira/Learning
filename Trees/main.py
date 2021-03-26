@@ -22,6 +22,24 @@ def minimum(root):
     return node
 
 
+def search_key(root, x):
+    # Search for x in tree
+    node = root
+    parent = root
+
+    while node is not None:
+        if x > node.val:
+            parent = node
+            node = node.right
+        elif x == node.val:
+            return [node, parent]
+        else:
+            parent = node
+            node = node.left
+
+    return [None, None]
+
+
 class Node:
     def __init__(self, val=0):
         self.val = val
@@ -134,8 +152,11 @@ class Tree:
 
             if successor_node is None:
                 print("Node {0} has no successor".format(node.val))
+                return None
             else:
                 print("Successor of {0} is {1}".format(node.val, successor_node.val))
+
+        return successor_node
 
     def predecessor(self, node):
         """
@@ -167,6 +188,56 @@ class Tree:
             else:
                 print("Successor of {0} is {1}".format(node.val, predecessor_node.val))
 
+    def delete_node(self, val):
+        """
+        This is used to delete a node from the tree
+        1. If node to be deleted is leaf, simple delete it
+        2. If node to be deleted has one child, connect parent of node to child of node and then
+            remove the node
+        3. If node to be deleted has two children, find successor of node and replace node with
+            it's successor and then remove successor node
+        """
+
+        [node_to_be_deleted, parent] = search_key(self.root, val)
+
+        if node_to_be_deleted.left is None and node_to_be_deleted.right is None:
+            # Leaf node so simple remove it
+            if parent.left is not None and parent.left.val == val:
+                parent.left = None
+            else:
+                parent.right = None
+
+        elif node_to_be_deleted.left is not None and node_to_be_deleted.right is None:
+            # Node with left child then link parent to child
+            if parent.left is not None and parent.left.val == val:
+                parent.left = node_to_be_deleted.left
+            else:
+                parent.right = node_to_be_deleted.left
+        elif node_to_be_deleted.left is None and node_to_be_deleted.right is not None:
+            # Node with right child then link parent to child
+            if parent.left is not None and parent.left.val == val:
+                parent.left = node_to_be_deleted.right
+            else:
+                parent.right = node_to_be_deleted.right
+        else:
+            # Node with two children so find successor and then replace node with successor
+            successor_node = self.successor(node_to_be_deleted)
+            [successor_node, successor_parent] = search_key(self.root, successor_node.val)
+            [node_to_be_deleted, node_to_be_deleted_parent] = search_key(self.root, node_to_be_deleted.val)
+
+            if successor_parent.left is not None and successor_parent.left.val == successor_node.val:
+                successor_parent.left = successor_node.right
+            else:
+                successor_parent.right = successor_node.right
+
+            if node_to_be_deleted_parent.left is not None and node_to_be_deleted_parent.left.val == node_to_be_deleted.val:
+                node_to_be_deleted_parent.left = successor_node
+            else:
+                node_to_be_deleted_parent.right = successor_node
+
+            successor_node.right = node_to_be_deleted.right
+            successor_node.left = node_to_be_deleted.left
+
     def inorder_traversal(self, node):
         if node is None:
             return
@@ -184,4 +255,6 @@ tree.insert_node(10)
 tree.insert_node(14)
 tree.insert_node(22)
 
-tree.predecessor(tree.root)
+tree.inorder_traversal(tree.root)
+tree.delete_node(12)
+tree.inorder_traversal(tree.root)
