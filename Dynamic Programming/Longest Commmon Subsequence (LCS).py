@@ -32,9 +32,6 @@ def recursive_lcs(string_one, string_two):
 # T(n) = O(n^2)
 # S(n) = O(n^2)
 def dp_lcs(string_one, string_two):
-    m = len(string_one)
-    n = len(string_two)
-
     memory = [[0] * (n + 1) for _ in range(m + 1)]
     answers = [[""] * (n + 1) for _ in range(m + 1)]
 
@@ -44,7 +41,7 @@ def dp_lcs(string_one, string_two):
                 memory[i][j] = 0
             elif string_one[i - 1] == string_two[j - 1]:
                 memory[i][j] = memory[i - 1][j - 1] + 1
-                answers[i][j] = answers[i - 1][j - 1] + string_one[j - 1]
+                answers[i][j] = answers[i - 1][j - 1] + string_one[i - 1]
             else:
                 memory[i][j] = max(memory[i - 1][j], memory[i][j - 1])
                 if memory[i - 1][j] == memory[i][j]:
@@ -55,8 +52,8 @@ def dp_lcs(string_one, string_two):
     return memory, answers
 
 
-X = "ABCD"
-Y = "ABDC"
+X = "10010101"
+Y = "010110110"
 m = len(X)
 n = len(Y)
 
@@ -64,12 +61,12 @@ result, ans = dp_lcs(X, Y)
 
 lcs = result[m][n]
 answer_indices = []
-set_of_answers = set();
+set_of_answers = set()
 
-for i in range(m + 1):
-    for j in range(n + 1):
-        if result[i][j] == lcs:
-            answer_indices.append([i, j])
+for ii in range(m + 1):
+    for jj in range(n + 1):
+        if result[ii][jj] == lcs:
+            answer_indices.append([ii, jj])
 
 for answer in answer_indices:
     set_of_answers.add(ans[answer[0]][answer[1]])
